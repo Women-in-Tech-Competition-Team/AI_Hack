@@ -1,37 +1,35 @@
 import { Tabs } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colorScheme === 'dark' ? '#fff' : '#000',
-        tabBarInactiveTintColor: colorScheme === 'dark' ? '#666' : '#999',
-      }}>
+    <Tabs>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
+          tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="games"
         options={{
-          title: 'Games',
+          title: 'Learning Games',
+          tabBarIcon: ({ color }) => <MaterialIcons name="games" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="dashboard"
+        name="progress"
         options={{
-          title: 'Dashboard',
+          title: 'Progress',
+          tabBarIcon: ({ color }) => <MaterialIcons name="assessment" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
+          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
         }}
       />
     </Tabs>
