@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { Card, Button } from 'react-native-paper';
+import { Card, Button, SegmentedButtons } from 'react-native-paper';
 import { GameComponent } from '@/components/GameComponent';
 import { GameGenerator } from '@/services/gameGenerator';
-import { GameResult } from '@/types/game';
+import { GameResult, AgeGroup, Subject, GameType } from '@/types/game';
 import { AnalysisService } from '@/services/analysisService';
-
-type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
 export default function GamesScreen() {
   const [currentGame, setCurrentGame] = useState<any>(null);
   const [gameResults, setGameResults] = useState<GameResult[]>([]);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroup>('pre-k');
+  const [selectedSubject, setSelectedSubject] = useState<Subject>('math');
 
-  const startGame = (type: string, difficulty: Difficulty) => {
+  const startGame = (type: GameType, ageGroup: AgeGroup, subject: Subject) => {
     const gameData = GameGenerator.generateGame({
       type,
-      difficulty,
-      category: 'visual', // This can be expanded based on game type
+      ageGroup,
+      subject,
+      difficulty: 'beginner',
     });
     setCurrentGame(gameData);
     setShowAnalysis(false);
@@ -29,69 +30,113 @@ export default function GamesScreen() {
     setShowAnalysis(true);
   };
 
+  const renderMathGames = () => (
+    <Card style={{ marginBottom: 16 }}>
+      <Card.Title title="Math Games" />
+      <Card.Content>
+        <Button
+          mode="contained"
+          onPress={() => startGame('number_recognition' as GameType, selectedAgeGroup, 'math')}
+          style={{ marginBottom: 8 }}
+        >
+          Number Recognition
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('basic_addition' as GameType, selectedAgeGroup, 'math')}
+          style={{ marginBottom: 8 }}
+        >
+          Basic Addition
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('shape_recognition' as GameType, selectedAgeGroup, 'math')}
+          style={{ marginBottom: 8 }}
+        >
+          Shape Recognition
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('counting_objects' as GameType, selectedAgeGroup, 'math')}
+        >
+          Counting Objects
+        </Button>
+      </Card.Content>
+    </Card>
+  );
+
+  const renderEnglishGames = () => (
+    <Card style={{ marginBottom: 16 }}>
+      <Card.Title title="English Games" />
+      <Card.Content>
+        <Button
+          mode="contained"
+          onPress={() => startGame('letter_recognition' as GameType, selectedAgeGroup, 'english')}
+          style={{ marginBottom: 8 }}
+        >
+          Letter Recognition
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('word_recognition' as GameType, selectedAgeGroup, 'english')}
+          style={{ marginBottom: 8 }}
+        >
+          Word Recognition
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('phonics' as GameType, selectedAgeGroup, 'english')}
+          style={{ marginBottom: 8 }}
+        >
+          Phonics
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => startGame('sight_words' as GameType, selectedAgeGroup, 'english')}
+        >
+          Sight Words
+        </Button>
+      </Card.Content>
+    </Card>
+  );
+
   const renderGameCategories = () => (
     <ScrollView style={{ flex: 1, padding: 16 }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>Learning Activities</Text>
 
-      {/* Visual Learning Activities */}
       <Card style={{ marginBottom: 16 }}>
-        <Card.Title title="Visual Learning" />
         <Card.Content>
-          <Button
-            mode="contained"
-            onPress={() => startGame('pattern_recognition', 'beginner')}
-            style={{ marginBottom: 8 }}
-          >
-            Pattern Recognition
-          </Button>
-          <Button
-            mode="contained"
-            onPress={() => startGame('color_matching', 'beginner')}
-            style={{ marginBottom: 8 }}
-          >
-            Color Matching
-          </Button>
-          <Button
-            mode="contained"
-            onPress={() => startGame('memory_match', 'beginner')}
-          >
-            Memory Match
-          </Button>
+          <Text style={{ marginBottom: 8 }}>Age Group:</Text>
+          <SegmentedButtons
+            value={selectedAgeGroup}
+            onValueChange={value => setSelectedAgeGroup(value as AgeGroup)}
+            buttons={[
+              { value: 'pre-k', label: 'Pre-K' },
+              { value: 'k-1', label: 'K-1' },
+              { value: 'k-2', label: 'K-2' },
+              { value: 'k-3', label: 'K-3' },
+              { value: 'k-4', label: 'K-4' },
+              { value: 'k-5', label: 'K-5' },
+            ]}
+          />
         </Card.Content>
       </Card>
 
-      {/* Language Development */}
       <Card style={{ marginBottom: 16 }}>
-        <Card.Title title="Language Development" />
         <Card.Content>
-          <Button
-            mode="contained"
-            onPress={() => startGame('word_recognition', 'beginner')}
-          >
-            Word Recognition
-          </Button>
+          <Text style={{ marginBottom: 8 }}>Subject:</Text>
+          <SegmentedButtons
+            value={selectedSubject}
+            onValueChange={value => setSelectedSubject(value as Subject)}
+            buttons={[
+              { value: 'math', label: 'Math' },
+              { value: 'english', label: 'English' },
+            ]}
+          />
         </Card.Content>
       </Card>
 
-      {/* Focus Activities */}
-      <Card style={{ marginBottom: 16 }}>
-        <Card.Title title="Focus Activities" />
-        <Card.Content>
-          <Button
-            mode="contained"
-            onPress={() => startGame('pattern_recognition', 'intermediate')}
-            style={{ marginBottom: 8 }}
-          >
-            Pattern Recognition (Advanced)
-          </Button>
-          <Button
-            mode="contained"
-            onPress={() => startGame('memory_match', 'intermediate')}
-          >
-            Memory Match (Advanced)
-          </Button>
-        </Card.Content>
-      </Card>
+      {selectedSubject === 'math' ? renderMathGames() : renderEnglishGames()}
     </ScrollView>
   );
 
@@ -138,18 +183,15 @@ export default function GamesScreen() {
         </Card>
 
         <Card style={{ marginBottom: 16 }}>
-          <Card.Title title="Special Needs Indicators" />
+          <Card.Title title="Progress" />
           <Card.Content>
-            {analysis.specialNeedsIndicators.map((indicator, index) => (
-              <View key={index} style={{ marginBottom: 8 }}>
-                <Text style={{ fontWeight: 'bold' }}>{indicator.type}</Text>
-                <Text>Confidence: {Math.round(indicator.confidence * 100)}%</Text>
-                <Text>Recommendations:</Text>
-                {indicator.recommendations.map((rec, recIndex) => (
-                  <Text key={recIndex}>• {rec}</Text>
-                ))}
-              </View>
-            ))}
+            <Text style={{ fontWeight: 'bold' }}>Math Progress:</Text>
+            <Text>Mastery Level: {Math.round(analysis.subjectProgress.math.masteryLevel * 100)}%</Text>
+            <Text>Next Topic: {analysis.subjectProgress.math.nextRecommendedTopic}</Text>
+            
+            <Text style={{ fontWeight: 'bold', marginTop: 8 }}>English Progress:</Text>
+            <Text>Mastery Level: {Math.round(analysis.subjectProgress.english.masteryLevel * 100)}%</Text>
+            <Text>Next Topic: {analysis.subjectProgress.english.nextRecommendedTopic}</Text>
           </Card.Content>
         </Card>
 
