@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@react-native-community/netinfo": "^11.4.1",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-react-native": "^1.0.0",
+    "@tensorflow/tfjs-vis": "^1.5.1",
+    "react-native-fs": "^2.20.0",
+    "react-native-globalize": "^4.5.1"
+  }
+}
